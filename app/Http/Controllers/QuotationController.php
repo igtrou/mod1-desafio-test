@@ -1,0 +1,119 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Application\Ports\In\Quotations\DeleteQuotationBatchUseCase;
+use App\Application\Ports\In\Quotations\DeleteSingleQuotationUseCase;
+use App\Application\Ports\In\Quotations\IndexQuotationHistoryUseCase;
+use App\Application\Ports\In\Quotations\ShowQuotationUseCase;
+use App\Application\Ports\In\Quotations\StoreQuotationUseCase;
+use App\Http\Controllers\Concerns\BuildsAuditContext;
+use App\Http\Requests\DeleteQuotationBatchRequest;
+use App\Http\Requests\QuotationIndexRequest;
+use App\Http\Requests\QuotationRequest;
+use App\Http\Resources\QuotationResource;
+use App\Http\Resources\QuoteDataResource;
+use App\Http\Resources\StoredQuotationDataResource;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
+/**
+ * Exposes quotation read/store endpoints with minimal orchestration logic.
+ */
+class QuotationController extends Controller
+{
+    use BuildsAuditContext;
+
+    /**
+     * Retrieves the latest quote from external providers without persisting it.
+     */
+    public function show(
+        QuotationRequest $request,
+        ShowQuotationUseCase $showQuotation
+    ): JsonResponse|QuoteDataResource {
+        $quote = $showQuotation($request->validated());
+
+        return (new QuoteDataResource($quote))
+            ->response()
+            ->setStatusCode(200);
+    }
+
+    /**
+     * Fetches and persists a quotation for a symbol.
+     */
+    public function store(
+        QuotationRequest $request,
+        StoreQuotationUseCase $storeQuotation
+    ): JsonResponse|StoredQuotationDataResource {
+        $storedQuotation = $storeQuotation($request->validated());
+
+        return (new StoredQuotationDataResource($storedQuotation))
+            ->response()
+            ->setStatusCode($storedQuotation->statusCode);
+    }
+
+    /**
+     * Returns paginated historical quotations with optional filters.
+     */
+    public function index(
+        QuotationIndexRequest $request,
+        IndexQuotationHistoryUseCase $indexQuotationHistory
+    ): ResourceCollection {
+        $quotations = $indexQuotationHistory($request->validated());
+        $paginator = new LengthAwarePaginator(
+            items: $quotations->items,
+            total: $quotations->total,
+            perPage: $quotations->perPage,
+            currentPage: $quotations->currentPage,
+            options: [
+                'path' => $request->url(),
+                'pageName' => 'page',
+            ]
+        );
+        $paginator->appends($request->query());
+
+        return QuotationResource::collection($paginator);
+    }
+
+    /**
+     * Soft deletes a single quotation from historical data.
+     */
+    public function destroy(
+        Request $request,
+        int $quotation,
+        DeleteSingleQuotationUseCase $deleteSingleQuotation
+    ): JsonResponse
+    {
+        $user = $request->user();
+        $gatewayAdminAuthorized = $request->attributes->get('gateway_admin_authorized') === true;
+        $response = $deleteSingleQuotation(
+            quotationId: $quotation,
+            canDelete: (bool) $user?->is_admin || $gatewayAdminAuthorized,
+            userId: is_numeric($user?->id) ? (int) $user->id : null,
+            auditContext: $this->buildAuditContext($request)
+        );
+
+        return response()->json($response->toArray(), $response->statusCode);
+    }
+
+    /**
+     * Soft deletes a filtered quotation subset.
+     */
+    public function destroyBatch(
+        DeleteQuotationBatchRequest $request,
+        DeleteQuotationBatchUseCase $deleteQuotationBatch
+    ): JsonResponse {
+        $user = $request->user();
+        $gatewayAdminAuthorized = $request->attributes->get('gateway_admin_authorized') === true;
+        $response = $deleteQuotationBatch(
+            validatedPayload: $request->validated(),
+            canDelete: (bool) $user?->is_admin || $gatewayAdminAuthorized,
+            userId: is_numeric($user?->id) ? (int) $user->id : null,
+            auditContext: $this->buildAuditContext($request)
+        );
+
+        return response()->json($response->toArray(), $response->statusCode);
+    }
+}
