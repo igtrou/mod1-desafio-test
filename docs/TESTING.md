@@ -7,7 +7,7 @@ Este guia cobre convencoes e comandos executaveis para a suite atual.
 
 1. Framework de testes: PHPUnit 11 (`php artisan test`).
 2. Suites ativas: `tests/Unit` e `tests/Feature` (definidas em `phpunit.xml`).
-3. Guardas arquiteturais: `tests/Unit/Architecture`.
+3. Guardas arquiteturais: `tests/Unit/Architecture` + `deptrac.yaml`.
 4. Banco de teste default: SQLite em memoria (`DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:` via `phpunit.xml`).
 
 ## Pre-requisitos
@@ -45,6 +45,18 @@ php artisan test --testsuite=Feature
 
 ```bash
 composer run test:architecture
+```
+
+### Analise arquitetural estatica (Deptrac)
+
+```bash
+vendor/bin/deptrac analyse --config-file=deptrac.yaml --no-progress --report-uncovered --fail-on-uncovered
+```
+
+### Baseline visual de camadas (Deptrac)
+
+```bash
+composer run architecture:diagram
 ```
 
 ### Pipeline local semelhante ao CI
@@ -98,7 +110,8 @@ php artisan test
 ```bash
 composer run test:architecture
 ```
-5. Atualizar este guia quando novos comandos, suites ou convencoes forem introduzidos.
+5. Se alterou mapeamento de camadas, atualizar `deptrac.yaml`.
+6. Atualizar este guia quando novos comandos, suites ou convencoes forem introduzidos.
 
 ## Relacao com outros documentos
 

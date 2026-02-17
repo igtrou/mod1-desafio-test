@@ -1,0 +1,129 @@
+deptrac:
+  paths:
+    - ./app
+  exclude_files:
+    - '#.*Test.*#'
+  layers:
+    - name: Domain
+      collectors:
+        - type: classLike
+          value: ^App\\Domain\\
+    - name: Data
+      collectors:
+        - type: classLike
+          value: ^App\\Data\\
+    - name: ApplicationPortsIn
+      collectors:
+        - type: classLike
+          value: ^App\\Application\\Ports\\In\\
+    - name: ApplicationPortsOut
+      collectors:
+        - type: classLike
+          value: ^App\\Application\\Ports\\Out\\
+    - name: Services
+      collectors:
+        - type: classLike
+          value: ^App\\Services\\
+    - name: Actions
+      collectors:
+        - type: classLike
+          value: ^App\\Actions\\
+    - name: Infrastructure
+      collectors:
+        - type: classLike
+          value: ^App\\Infrastructure\\
+    - name: Http
+      collectors:
+        - type: classLike
+          value: ^App\\Http\\
+    - name: Console
+      collectors:
+        - type: classLike
+          value: ^App\\Console\\
+    - name: Models
+      collectors:
+        - type: classLike
+          value: ^App\\Models\\
+    - name: Providers
+      collectors:
+        - type: classLike
+          value: ^App\\Providers\\
+    - name: OpenApi
+      collectors:
+        - type: classLike
+          value: ^App\\OpenApi\\
+    - name: Framework
+      collectors:
+        - type: classLike
+          value: ^(Illuminate|Laravel|Symfony)\\
+    - name: DateTime
+      collectors:
+        - type: classLike
+          value: ^Carbon\\
+    - name: OpenApiAttributes
+      collectors:
+        - type: classLike
+          value: ^OpenApi\\
+  ruleset:
+    Domain: [ ]
+    Data:
+      - Data
+      - Domain
+      - DateTime
+    ApplicationPortsIn:
+      - ApplicationPortsIn
+      - Data
+      - Domain
+    ApplicationPortsOut:
+      - ApplicationPortsOut
+      - Domain
+    Services:
+      - Services
+      - Domain
+      - ApplicationPortsOut
+      - DateTime
+    Actions:
+      - Actions
+      - ApplicationPortsIn
+      - Services
+      - Data
+    Infrastructure:
+      - Infrastructure
+      - ApplicationPortsOut
+      - Domain
+      - Models
+      - Framework
+      - DateTime
+    Http:
+      - Http
+      - ApplicationPortsIn
+      - Data
+      - Domain
+      - Framework
+    Console:
+      - Console
+      - ApplicationPortsIn
+      - Data
+      - Domain
+      - Framework
+    Models:
+      - Models
+      - Domain
+      - Framework
+    Providers:
+      - Providers
+      - Domain
+      - ApplicationPortsIn
+      - ApplicationPortsOut
+      - Infrastructure
+      - Framework
+      - DateTime
+    OpenApi:
+      - OpenApi
+      - OpenApiAttributes
+    Framework:
+      - Framework
+    DateTime:
+      - DateTime
+    OpenApiAttributes:
+      - OpenApiAttributes

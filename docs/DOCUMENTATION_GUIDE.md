@@ -47,7 +47,7 @@ Objetivo curto do documento.
 | Mudanca no codigo | Documentos a revisar |
 | --- | --- |
 | Rotas, payloads, status HTTP, autenticacao | [`API.md`](API.md), [`API_FLOW_MAP.md`](API_FLOW_MAP.md), [`../README.md`](../README.md) |
-| Fluxo de camada, responsabilidade de Action/Service/Domain/Infrastructure | [`API_FLOW_MAP.md`](API_FLOW_MAP.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), [`ARCHITECTURE_GUIDELINES.md`](ARCHITECTURE_GUIDELINES.md), [`../README.md`](../README.md) |
+| Fluxo de camada, responsabilidade de Action/Service/Domain/Infrastructure | [`API_FLOW_MAP.md`](API_FLOW_MAP.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), [`ARCHITECTURE_GUIDELINES.md`](ARCHITECTURE_GUIDELINES.md), [`ARCHITECTURE_LAYER_BASELINE.md`](ARCHITECTURE_LAYER_BASELINE.md), [`../README.md`](../README.md) |
 | Comandos operacionais, scheduler, variaveis `.env`, logs | [`OPERATIONS.md`](OPERATIONS.md), [`../README.md`](../README.md) |
 | Suite de testes, convencoes de escrita de testes, pipeline de qualidade | [`TESTING.md`](TESTING.md) |
 | Setup local/Sail, comandos de bootstrap, stack | [`../README.md`](../README.md), [`README.md`](README.md) |

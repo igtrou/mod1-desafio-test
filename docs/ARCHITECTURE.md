@@ -311,11 +311,20 @@ Bindings centralizados em `app/Providers/AppServiceProvider.php`.
    1. padrao de naming `*Action`;
    2. apenas `__invoke` publico;
    3. implementacao de `*UseCase` correspondente.
+9. `deptrac.yaml` + `vendor/bin/deptrac`
+   1. garante regras entre camadas em analise estatica (AST);
+   2. falha quando ha dependencia nao mapeada (`--fail-on-uncovered`).
 
 Validacao recomendada antes de merge:
 
 ```bash
 composer run test:architecture
+```
+
+Baseline visual de camadas (Mermaid/DOT):
+
+```bash
+composer run architecture:diagram
 ```
 
 ## Checklist rapido para evolucao arquitetural

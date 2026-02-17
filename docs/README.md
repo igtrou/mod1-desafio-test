@@ -11,6 +11,7 @@ Este diretorio concentra a documentacao tecnica do projeto. Use este arquivo com
 | [`API_FLOW_MAP.md`](API_FLOW_MAP.md) | Visualizar fluxo tecnico por rota | Diagramas Mermaid de todas as rotas de `routes/api.php`, com chain `Http -> Ports/In -> Actions -> Services -> Domain -> Ports/Out -> Infrastructure`. |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Entender arquitetura executavel | Estilo arquitetural, mapa de portas/adaptadores, fluxos ponta a ponta HTTP/Console/Dashboard/Auth e guardrails automatizados. |
 | [`ARCHITECTURE_GUIDELINES.md`](ARCHITECTURE_GUIDELINES.md) | Evoluir o codigo sem quebrar padrao | Regras normativas por camada, matriz de dependencia, anti-patterns e checklist de PR arquitetural. |
+| [`ARCHITECTURE_LAYER_BASELINE.md`](ARCHITECTURE_LAYER_BASELINE.md) | Revisar impacto estrutural em PR | Baseline visual de dependencias entre camadas (Mermaid/Deptrac) e comando de regeneracao. |
 | [`OPERATIONS.md`](OPERATIONS.md) | Operacao diaria e suporte | Variaveis de ambiente, runbook, scheduler, logs e troubleshooting. |
 | [`KRAKEND_PLAYGROUND.md`](KRAKEND_PLAYGROUND.md) | Integrar API Gateway no projeto | Setup do KrakenD via Docker profiles, rotas de gateway e padroes para plugar suas APIs. |
 | [`GATEWAY_EXECUTION_PLAN.md`](GATEWAY_EXECUTION_PLAN.md) | Entender o processo fim-a-fim da migracao | Roadmap por fases (1-6), status atual, criterios de pronto, validacao e rollback. |
@@ -34,8 +35,9 @@ Este diretorio concentra a documentacao tecnica do projeto. Use este arquivo com
 
 1. [`ARCHITECTURE.md`](ARCHITECTURE.md)
 2. [`ARCHITECTURE_GUIDELINES.md`](ARCHITECTURE_GUIDELINES.md)
-3. `tests/Unit/Architecture/*`
-4. `app/Providers/AppServiceProvider.php`
+3. [`ARCHITECTURE_LAYER_BASELINE.md`](ARCHITECTURE_LAYER_BASELINE.md)
+4. `tests/Unit/Architecture/*`
+5. `app/Providers/AppServiceProvider.php`
 
 ### QA / testes manuais
 
@@ -58,6 +60,7 @@ Este diretorio concentra a documentacao tecnica do projeto. Use este arquivo com
 | Entender endpoints e contratos | [`API.md`](API.md) | [`postman/financial-quotation-api.postman_collection.json`](postman/financial-quotation-api.postman_collection.json) |
 | Entender fluxo de execucao por rota API | [`API_FLOW_MAP.md`](API_FLOW_MAP.md) | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | Alterar arquitetura sem quebrar padrao | [`ARCHITECTURE_GUIDELINES.md`](ARCHITECTURE_GUIDELINES.md) | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| Revisar diff arquitetural de camadas em PR | [`ARCHITECTURE_LAYER_BASELINE.md`](ARCHITECTURE_LAYER_BASELINE.md) | [`ARCHITECTURE_GUIDELINES.md`](ARCHITECTURE_GUIDELINES.md) |
 | Subir API Gateway com KrakenD | [`KRAKEND_PLAYGROUND.md`](KRAKEND_PLAYGROUND.md) | [`OPERATIONS.md`](OPERATIONS.md) |
 | Entender a migracao completa Gateway + Auth | [`GATEWAY_EXECUTION_PLAN.md`](GATEWAY_EXECUTION_PLAN.md) | [`KRAKEND_PLAYGROUND.md`](KRAKEND_PLAYGROUND.md) |
 | Validar arquitetura com todos os servicos | [`ARCHITECTURE_SERVICES_STRATEGY.md`](ARCHITECTURE_SERVICES_STRATEGY.md) | [`OPERATIONS.md`](OPERATIONS.md) |

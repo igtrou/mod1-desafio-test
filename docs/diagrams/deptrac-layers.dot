@@ -1,0 +1,131 @@
+digraph "" {
+"Actions" -> "Services" [
+label="40"
+]
+"Actions" -> "ApplicationPortsIn" [
+label="28"
+]
+"Actions" -> "Data" [
+label="53"
+]
+"ApplicationPortsIn" -> "Data" [
+label="15"
+]
+"ApplicationPortsOut" -> "Domain" [
+label="14"
+]
+"Console" -> "ApplicationPortsIn" [
+label="5"
+]
+"Console" -> "Framework" [
+label="12"
+]
+"Data" -> "DateTime" [
+label="6"
+]
+"Data" -> "Domain" [
+label="13"
+]
+"Http" -> "Framework" [
+label="111"
+]
+"Http" -> "ApplicationPortsIn" [
+label="23"
+]
+"Http" -> "Data" [
+label="1"
+]
+"Http" -> "Domain" [
+label="29"
+]
+"Infrastructure" -> "Framework" [
+label="49"
+]
+"Infrastructure" -> "Domain" [
+label="143"
+]
+"Infrastructure" -> "Models" [
+label="29"
+]
+"Infrastructure" -> "ApplicationPortsOut" [
+label="29"
+]
+"Infrastructure" -> "DateTime" [
+label="16"
+]
+"Models" -> "Domain" [
+label="6"
+]
+"Models" -> "Framework" [
+label="11"
+]
+"OpenApi" -> "OpenApiAttributes" [
+label="347"
+]
+"Providers" -> "Infrastructure" [
+label="25"
+]
+"Providers" -> "Domain" [
+label="5"
+]
+"Providers" -> "ApplicationPortsOut" [
+label="23"
+]
+"Providers" -> "Framework" [
+label="4"
+]
+"Services" -> "ApplicationPortsOut" [
+label="35"
+]
+"Services" -> "Domain" [
+label="38"
+]
+"Services" -> "DateTime" [
+label="7"
+]
+"Actions" [
+
+]
+"Services" [
+
+]
+"ApplicationPortsIn" [
+
+]
+"Data" [
+
+]
+"ApplicationPortsOut" [
+
+]
+"Domain" [
+
+]
+"Console" [
+
+]
+"Framework" [
+
+]
+"DateTime" [
+
+]
+"Http" [
+
+]
+"Infrastructure" [
+
+]
+"Models" [
+
+]
+"OpenApi" [
+
+]
+"OpenApiAttributes" [
+
+]
+"Providers" [
+
+]
+}

@@ -134,6 +134,16 @@ Referencias:
 7. `tests/Unit/Architecture/CommandLayerDependencyTest.php`
 8. `tests/Unit/Architecture/PortsLayerDependencyTest.php`
 
+## Guardrails estaticos adicionais (Deptrac)
+
+1. O arquivo `deptrac.yaml` define camadas e regras de dependencia em nivel de AST para `app/`.
+2. O objetivo e complementar os testes baseados em string/regex com analise semantica de dependencia.
+3. O comando oficial `composer run test:architecture` executa:
+   1. testes de arquitetura em `tests/Unit/Architecture`;
+   2. `vendor/bin/deptrac analyse --config-file=deptrac.yaml --no-progress --report-uncovered --fail-on-uncovered`.
+4. Mudancas de fluxo entre camadas devem atualizar `deptrac.yaml` no mesmo PR, com motivacao explicita.
+5. Baseline visual para revisao de PR pode ser regenerado com `composer run architecture:diagram`.
+
 ## Como adicionar uma integracao externa (padrao porta/adaptador)
 
 1. Definir interface em `app/Application/Ports/Out`.
@@ -178,4 +188,10 @@ Referencias:
 
 ```bash
 composer run test:architecture
+```
+
+Comando direto do Deptrac:
+
+```bash
+vendor/bin/deptrac analyse --config-file=deptrac.yaml --no-progress --report-uncovered --fail-on-uncovered
 ```
