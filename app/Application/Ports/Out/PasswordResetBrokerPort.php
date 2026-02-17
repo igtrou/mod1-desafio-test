@@ -2,6 +2,8 @@
 
 namespace App\Application\Ports\Out;
 
+use App\Domain\Auth\PasswordResetResult;
+
 interface PasswordResetBrokerPort
 {
     public function sendResetLink(string $email): string;
@@ -14,7 +16,7 @@ interface PasswordResetBrokerPort
      *     password_confirmation: string
      * }  $payload
      */
-    public function reset(array $payload, callable $callback): string;
+    public function reset(array $payload, string $hashedPassword, string $rememberToken): PasswordResetResult;
 
     public function resetLinkSentStatus(): string;
 

@@ -77,7 +77,8 @@ Validacoes minimas:
 2. Regras de alerta carregadas:
    1. `KrakenDHigh5xxRate`
    2. `KrakenDHighP95Latency`
-   3. `KrakenDUpstreamErrors`
+   3. `KrakenDHigh429Rate`
+   4. `KrakenDUpstreamErrors`
 3. Jaeger lista `krakend_gateway`.
 4. Grafana responde com health `database=ok`.
 5. InfluxDB responde em `/ping`.

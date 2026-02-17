@@ -20,7 +20,9 @@ class VerifyEmailController extends Controller
         VerifyEmailAddressUseCase $verifyEmailAddress
     ): RedirectResponse
     {
-        if (! $verifyEmailAddress($request->user())) {
+        $user = $request->user();
+
+        if (! $verifyEmailAddress(is_numeric($user?->id) ? (int) $user->id : null)) {
             return redirect()->intended(
                 config('app.frontend_url').'/dashboard?verified=1'
             );

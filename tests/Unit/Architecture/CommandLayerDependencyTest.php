@@ -37,6 +37,14 @@ class CommandLayerDependencyTest extends TestCase
                     $fileInfo->getPathname()
                 )
             );
+            $this->assertStringNotContainsString(
+                'use App\\Domain\\',
+                $contents,
+                sprintf(
+                    'Command [%s] must not depend directly on Domain.',
+                    $fileInfo->getPathname()
+                )
+            );
         }
     }
 

@@ -22,16 +22,41 @@ groups:
         expr: |
           histogram_quantile(
             0.95,
-            sum by (le) (rate(http_server_duration_bucket{http_route=~"/v1/.*"}[5m]))
+            sum by (le) (
+              rate(http_server_duration_bucket{
+                http_route="/v1/public/quotation/:symbol",
+                http_response_status_code=~"2.."
+              }[5m])
+            )
           ) > 0.8
-          and sum(rate(http_server_duration_count{http_route=~"/v1/.*"}[5m])) > 0.2
+          and sum(rate(http_server_duration_count{
+            http_route="/v1/public/quotation/:symbol",
+            http_response_status_code=~"2.."
+          }[5m])) > 0.2
         for: 5m
         labels:
           severity: warning
           service: krakend
         annotations:
-          summary: KrakenD com p95 alto na superficie v1
-          description: A latencia p95 do gateway ficou acima de 800ms por 5 minutos.
+          summary: KrakenD com p95 alto na rota publica de cotacao (2xx)
+          description: A latencia p95 de sucesso no endpoint /v1/public/quotation/:symbol ficou acima de 800ms por 5 minutos.
+
+      - alert: KrakenDHigh429Rate
+        expr: |
+          sum(rate(http_server_duration_count{
+            http_route="/v1/public/quotation/:symbol",
+            http_response_status_code="429"
+          }[5m])) > 0.2
+          and sum(rate(http_server_duration_count{
+            http_route="/v1/public/quotation/:symbol"
+          }[5m])) > 0.2
+        for: 3m
+        labels:
+          severity: warning
+          service: krakend
+        annotations:
+          summary: KrakenD com taxa alta de 429 na rota publica de cotacao
+          description: O endpoint /v1/public/quotation/:symbol esta sob throttle (429) acima do esperado por 3 minutos.
 
       - alert: KrakenDUpstreamErrors
         expr: |

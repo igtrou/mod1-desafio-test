@@ -2,7 +2,6 @@
 
 namespace App\Services\Auth;
 
-use App\Domain\Auth\UserIdentity;
 use App\Application\Ports\Out\AuthLifecycleEventsPort;
 use App\Application\Ports\Out\PasswordHasherPort;
 use App\Application\Ports\Out\PasswordResetBrokerPort;
@@ -66,30 +65,21 @@ class PasswordResetService
      */
     public function reset(array $validatedPayload): string
     {
-        $status = $this->passwordResetBroker->reset(
+        $resetResult = $this->passwordResetBroker->reset(
             [
                 'token' => $validatedPayload['token'],
                 'email' => $validatedPayload['email'],
                 'password' => $validatedPayload['password'],
                 'password_confirmation' => $validatedPayload['password'],
             ],
-            function (object $user) use ($validatedPayload): void {
-                if (! method_exists($user, 'forceFill') || ! method_exists($user, 'save')) {
-                    return;
-                }
-
-                $user->forceFill([
-                    'password' => $this->passwordHasher->make($validatedPayload['password']),
-                    'remember_token' => $this->rememberTokenGenerator->generate(),
-                ])->save();
-
-                $userId = $this->resolveUserId($user);
-
-                if ($userId !== null) {
-                    $this->authLifecycleEvents->dispatchPasswordReset(new UserIdentity($userId));
-                }
-            }
+            $this->passwordHasher->make($validatedPayload['password']),
+            $this->rememberTokenGenerator->generate(),
         );
+        $status = $resetResult->status;
+
+        if ($resetResult->userIdentity !== null) {
+            $this->authLifecycleEvents->dispatchPasswordReset($resetResult->userIdentity);
+        }
 
         if ($status !== $this->passwordResetBroker->passwordResetStatus()) {
             throw DomainValidationException::withErrors([
@@ -98,22 +88,5 @@ class PasswordResetService
         }
 
         return $status;
-    }
-
-    private function resolveUserId(object $user): ?int
-    {
-        if (isset($user->id) && is_numeric($user->id)) {
-            return (int) $user->id;
-        }
-
-        if (method_exists($user, 'getKey')) {
-            $key = $user->getKey();
-
-            if (is_numeric($key)) {
-                return (int) $key;
-            }
-        }
-
-        return null;
     }
 }

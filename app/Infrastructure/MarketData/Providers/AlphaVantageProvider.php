@@ -75,7 +75,7 @@ class AlphaVantageProvider implements MarketDataProvider
     private function fetchGlobalQuote(string $symbol, AssetType $resolvedAssetType, string $apiKey): Quote
     {
         $response = Http::baseUrl($this->config['base_uri'] ?? 'https://www.alphavantage.co')
-            ->timeout(10)
+            ->timeout($this->timeoutSeconds())
             ->get('/query', [
                 'function' => 'GLOBAL_QUOTE',
                 'symbol' => $symbol,
@@ -112,7 +112,7 @@ class AlphaVantageProvider implements MarketDataProvider
     private function fetchCurrencyQuote(string $baseCurrency, string $quoteCurrency, string $apiKey, AssetType $type): Quote
     {
         $response = Http::baseUrl($this->config['base_uri'] ?? 'https://www.alphavantage.co')
-            ->timeout(10)
+            ->timeout($this->timeoutSeconds())
             ->get('/query', [
                 'function' => 'CURRENCY_EXCHANGE_RATE',
                 'from_currency' => $baseCurrency,
@@ -243,5 +243,13 @@ class AlphaVantageProvider implements MarketDataProvider
         $timezone = (string) ($this->config['timezone'] ?? config('app.timezone', 'UTC'));
 
         return CarbonImmutable::parse($rawTimestamp, $timezone)->utc();
+    }
+
+    /**
+     * Retorna timeout HTTP ajustavel por configuracao com fallback seguro.
+     */
+    private function timeoutSeconds(): float
+    {
+        return max(0.5, (float) ($this->config['timeout_seconds'] ?? 3.0));
     }
 }

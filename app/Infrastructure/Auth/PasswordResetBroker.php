@@ -3,6 +3,8 @@
 namespace App\Infrastructure\Auth;
 
 use App\Application\Ports\Out\PasswordResetBrokerPort;
+use App\Domain\Auth\PasswordResetResult;
+use App\Domain\Auth\UserIdentity;
 use Illuminate\Support\Facades\Password;
 
 /**
@@ -34,9 +36,34 @@ class PasswordResetBroker implements PasswordResetBrokerPort
     /**
      * Executa a rotina principal do metodo reset.
      */
-    public function reset(array $payload, callable $callback): string
+    public function reset(array $payload, string $hashedPassword, string $rememberToken): PasswordResetResult
     {
-        return Password::reset($payload, $callback);
+        $resolvedUserId = null;
+        $status = Password::reset($payload, function (object $user) use (
+            $hashedPassword,
+            $rememberToken,
+            &$resolvedUserId
+        ): void {
+            $user->forceFill([
+                'password' => $hashedPassword,
+                'remember_token' => $rememberToken,
+            ])->save();
+
+            if (is_numeric($user->id ?? null)) {
+                $resolvedUserId = (int) $user->id;
+
+                return;
+            }
+
+            if (method_exists($user, 'getKey') && is_numeric($user->getKey())) {
+                $resolvedUserId = (int) $user->getKey();
+            }
+        });
+
+        return new PasswordResetResult(
+            status: $status,
+            userIdentity: $resolvedUserId !== null ? new UserIdentity($resolvedUserId) : null
+        );
     }
 
     /**

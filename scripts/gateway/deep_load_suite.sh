@@ -896,9 +896,9 @@ log "Step 3/6 - Prometheus baseline snapshot"
 if [[ "$HAVE_PROMETHEUS" -eq 1 ]]; then
     METRIC_TOTAL_REQ_BASELINE="$(prometheus_query_value 'sum(http_server_duration_count{http_route=~"/v1/.*"})' || true)"
     METRIC_5XX_BASELINE="$(prometheus_query_value 'sum(http_server_duration_count{http_route=~"/v1/.*",http_response_status_code=~"5.."})' || true)"
-    METRIC_429_BASELINE="$(prometheus_query_value 'sum(http_server_duration_count{http_route=~"/v1/.*",http_response_status_code="429"})' || true)"
+    METRIC_429_BASELINE="$(prometheus_query_value 'sum(http_server_duration_count{http_route="/v1/public/quotation/:symbol",http_response_status_code="429"})' || true)"
     METRIC_UPSTREAM_ERR_BASELINE="$(prometheus_query_value 'sum(krakend_backend_duration_count{krakend_endpoint_route=~"/v1/.*",error="true"})' || true)"
-    METRIC_P95_BASELINE="$(prometheus_query_value 'histogram_quantile(0.95, sum(rate(http_server_duration_bucket{http_route=~"/v1/.*"}[2m])) by (le))' || true)"
+    METRIC_P95_BASELINE="$(prometheus_query_value 'histogram_quantile(0.95, sum(rate(http_server_duration_bucket{http_route="/v1/public/quotation/:symbol",http_response_status_code=~"2.."}[2m])) by (le))' || true)"
 
     if [[ -n "$METRIC_TOTAL_REQ_BASELINE" ]]; then
         pass "Prometheus baseline captured"
@@ -1129,15 +1129,15 @@ if [[ "$HAVE_PROMETHEUS" -eq 1 ]]; then
 
     METRIC_TOTAL_REQ_FINAL="$(prometheus_query_value 'sum(http_server_duration_count{http_route=~"/v1/.*"})' || true)"
     METRIC_5XX_FINAL="$(prometheus_query_value 'sum(http_server_duration_count{http_route=~"/v1/.*",http_response_status_code=~"5.."})' || true)"
-    METRIC_429_FINAL="$(prometheus_query_value 'sum(http_server_duration_count{http_route=~"/v1/.*",http_response_status_code="429"})' || true)"
+    METRIC_429_FINAL="$(prometheus_query_value 'sum(http_server_duration_count{http_route="/v1/public/quotation/:symbol",http_response_status_code="429"})' || true)"
     METRIC_UPSTREAM_ERR_FINAL="$(prometheus_query_value 'sum(krakend_backend_duration_count{krakend_endpoint_route=~"/v1/.*",error="true"})' || true)"
-    METRIC_P95_FINAL="$(prometheus_query_value 'histogram_quantile(0.95, sum(rate(http_server_duration_bucket{http_route=~"/v1/.*"}[2m])) by (le))' || true)"
+    METRIC_P95_FINAL="$(prometheus_query_value 'histogram_quantile(0.95, sum(rate(http_server_duration_bucket{http_route="/v1/public/quotation/:symbol",http_response_status_code=~"2.."}[2m])) by (le))' || true)"
 
     record_prom_row "gateway_total_requests" "$METRIC_TOTAL_REQ_BASELINE" "$METRIC_TOTAL_REQ_FINAL" "$(float_delta "$METRIC_TOTAL_REQ_BASELINE" "$METRIC_TOTAL_REQ_FINAL")"
     record_prom_row "gateway_5xx_requests" "$METRIC_5XX_BASELINE" "$METRIC_5XX_FINAL" "$(float_delta "$METRIC_5XX_BASELINE" "$METRIC_5XX_FINAL")"
-    record_prom_row "gateway_429_requests" "$METRIC_429_BASELINE" "$METRIC_429_FINAL" "$(float_delta "$METRIC_429_BASELINE" "$METRIC_429_FINAL")"
+    record_prom_row "gateway_public_quote_429_requests" "$METRIC_429_BASELINE" "$METRIC_429_FINAL" "$(float_delta "$METRIC_429_BASELINE" "$METRIC_429_FINAL")"
     record_prom_row "gateway_upstream_errors" "$METRIC_UPSTREAM_ERR_BASELINE" "$METRIC_UPSTREAM_ERR_FINAL" "$(float_delta "$METRIC_UPSTREAM_ERR_BASELINE" "$METRIC_UPSTREAM_ERR_FINAL")"
-    record_prom_row "gateway_p95_seconds" "$METRIC_P95_BASELINE" "$METRIC_P95_FINAL" "$(float_delta "$METRIC_P95_BASELINE" "$METRIC_P95_FINAL")"
+    record_prom_row "gateway_public_quote_p95_success_seconds" "$METRIC_P95_BASELINE" "$METRIC_P95_FINAL" "$(float_delta "$METRIC_P95_BASELINE" "$METRIC_P95_FINAL")"
 else
     record_prom_row "prometheus_metrics" "-" "-" "skipped"
 fi

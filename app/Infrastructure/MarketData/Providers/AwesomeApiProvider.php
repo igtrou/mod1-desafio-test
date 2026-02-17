@@ -47,7 +47,7 @@ class AwesomeApiProvider implements MarketDataProvider
         $pair = $this->buildPair($normalizedSymbol, $resolvedAssetType);
 
         $response = Http::baseUrl($this->config['base_uri'] ?? self::DEFAULT_BASE_URI)
-            ->timeout(10)
+            ->timeout($this->timeoutSeconds())
             ->get("/{$pair}");
 
         if ($response->status() === 429) {
@@ -152,5 +152,13 @@ class AwesomeApiProvider implements MarketDataProvider
         $timezone = (string) ($this->config['timezone'] ?? config('app.timezone', 'UTC'));
 
         return CarbonImmutable::parse($rawTimestamp, $timezone)->utc();
+    }
+
+    /**
+     * Retorna timeout HTTP ajustavel por configuracao com fallback seguro.
+     */
+    private function timeoutSeconds(): float
+    {
+        return max(0.5, (float) ($this->config['timeout_seconds'] ?? 3.0));
     }
 }

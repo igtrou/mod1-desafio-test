@@ -189,7 +189,7 @@
       "endpoint": "/v1/public/quotation/{symbol}",
       "method": "GET",
       "timeout": "3500ms",
-      "cache_ttl": "15s",
+      "cache_ttl": "60s",
       "input_headers": [
         "Authorization",
         "X-Request-Id"
@@ -200,9 +200,9 @@
       ],
       "extra_config": {
         "qos/ratelimit/router": {
-          "max_rate": 60,
-          "capacity": 120,
-          "client_max_rate": 20,
+          "max_rate": 180,
+          "capacity": 360,
+          "client_max_rate": 90,
           "strategy": "ip"
         },
         "qos/circuit-breaker": {
@@ -245,7 +245,7 @@
       "endpoint": "/v1/private/quotation/{symbol}",
       "method": "GET",
       "timeout": "3500ms",
-      "cache_ttl": "15s",
+      "cache_ttl": "60s",
       "input_headers": [
         "Authorization",
         "X-Request-Id"
@@ -277,9 +277,9 @@
           ]
         },
         "qos/ratelimit/router": {
-          "max_rate": 60,
-          "capacity": 120,
-          "client_max_rate": 20,
+          "max_rate": 180,
+          "capacity": 360,
+          "client_max_rate": 90,
           "strategy": "ip"
         },
         "qos/circuit-breaker": {

@@ -4,6 +4,7 @@ namespace App\Actions\Quotations;
 
 use App\Application\Ports\In\Quotations\ShowQuotationUseCase;
 
+use App\Data\QuoteData;
 use App\Services\Quotations\FetchLatestQuoteService;
 
 /**
@@ -23,12 +24,22 @@ class ShowQuotationAction implements ShowQuotationUseCase
      *
      * @param  array{symbol: string, provider?: string|null, type?: string|null}  $validatedPayload
      */
-    public function __invoke(array $validatedPayload)
+    public function __invoke(array $validatedPayload): QuoteData
     {
-        return $this->fetchLatestQuote->handle(
+        $quote = $this->fetchLatestQuote->handle(
             $validatedPayload['symbol'],
             $validatedPayload['provider'] ?? null,
             $validatedPayload['type'] ?? null
+        );
+
+        return new QuoteData(
+            symbol: $quote->symbol,
+            name: $quote->name,
+            type: $quote->type,
+            price: $quote->price,
+            currency: $quote->currency,
+            source: $quote->source,
+            quotedAt: $quote->quotedAt
         );
     }
 }

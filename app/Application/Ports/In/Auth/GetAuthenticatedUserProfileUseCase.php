@@ -6,5 +6,5 @@ use App\Data\AuthenticatedUserData;
 
 interface GetAuthenticatedUserProfileUseCase
 {
-    public function __invoke(?object $user): AuthenticatedUserData;
+    public function __invoke(?int $userId): AuthenticatedUserData;
 }

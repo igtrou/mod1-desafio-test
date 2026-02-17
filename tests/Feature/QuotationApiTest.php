@@ -517,6 +517,7 @@ class QuotationApiTest extends TestCase
             'X-Gateway-Secret' => 'krakend-internal',
             'X-Gateway-Auth' => 'jwt',
             'X-Auth-Roles' => 'reader,moderator',
+            'X-Auth-Subject' => 'gateway-user-42',
         ])->deleteJson('/api/quotations/'.$quotation->id);
 
         $authorized->assertOk()
@@ -525,6 +526,18 @@ class QuotationApiTest extends TestCase
         $this->assertSoftDeleted((new Quotation)->getTable(), [
             'id' => $quotation->id,
         ]);
+
+        $activity = Activity::query()
+            ->where('event', 'quotation.deleted')
+            ->latest('id')
+            ->first();
+
+        $this->assertNotNull($activity);
+        $this->assertNull($activity->causer_id);
+        $this->assertSame('gateway-user-42', $activity->getExtraProperty('gateway_subject'));
+        $this->assertSame(['reader', 'moderator'], $activity->getExtraProperty('gateway_roles'));
+        $this->assertTrue($activity->getExtraProperty('gateway_request_verified'));
+        $this->assertTrue($activity->getExtraProperty('gateway_admin_authorized'));
     }
 
     /**

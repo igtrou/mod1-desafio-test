@@ -19,7 +19,10 @@ class AuthenticatedUserController extends Controller
         Request $request,
         GetAuthenticatedUserProfileUseCase $getAuthenticatedUserProfile
     ): JsonResponse {
-        $profile = $getAuthenticatedUserProfile($request->user());
+        $user = $request->user();
+        $profile = $getAuthenticatedUserProfile(
+            is_numeric($user?->id) ? (int) $user->id : null
+        );
 
         return response()->json([
             'data' => $profile->toArray(),

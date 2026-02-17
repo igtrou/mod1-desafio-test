@@ -7,6 +7,7 @@ use App\Application\Ports\Out\ApplicationLoggerPort;
 use App\Application\Ports\Out\AuditLoggerPort;
 use App\Application\Ports\Out\AuthLifecycleEventsPort;
 use App\Application\Ports\Out\ConfigCachePort;
+use App\Application\Ports\Out\EmailVerificationPort;
 use App\Application\Ports\Out\EnvFileEditorPort;
 use App\Application\Ports\Out\LoginRateLimiterPort;
 use App\Application\Ports\Out\MarketDataProviderManagerPort;
@@ -30,6 +31,7 @@ use App\Domain\MarketData\SymbolNormalizer;
 use App\Domain\Quotations\QuotationQualityService;
 use App\Infrastructure\Audit\AuditLogger;
 use App\Infrastructure\Auth\AuthLifecycleEvents;
+use App\Infrastructure\Auth\EmailVerificationGateway;
 use App\Infrastructure\Auth\LoginRateLimiter;
 use App\Infrastructure\Auth\PasswordHasher;
 use App\Infrastructure\Auth\PasswordResetBroker;
@@ -115,6 +117,7 @@ class AppServiceProvider extends ServiceProvider
             AuditLoggerPort::class => AuditLogger::class,
             AuthLifecycleEventsPort::class => AuthLifecycleEvents::class,
             ConfigCachePort::class => ConfigCacheManager::class,
+            EmailVerificationPort::class => EmailVerificationGateway::class,
             EnvFileEditorPort::class => EnvFileEditor::class,
             LoginRateLimiterPort::class => LoginRateLimiter::class,
             PasswordHasherPort::class => PasswordHasher::class,

@@ -2,11 +2,17 @@
 
 namespace App\Services\Auth;
 
+use App\Application\Ports\Out\UserRepositoryPort;
+
 /**
  * Construi o payload padrao de perfil do usuario autenticado.
  */
 class AuthenticatedUserProfileService
 {
+    public function __construct(
+        private readonly UserRepositoryPort $userRepository,
+    ) {}
+
     /**
      * Mapeia dados basicos e permissoes derivadas para DTO de resposta.
      *
@@ -18,14 +24,17 @@ class AuthenticatedUserProfileService
      *     permissions: array{delete_quotations: bool}
      * }
      */
-    public function build(AuthenticatedUserProfileInput $user): array
+    public function build(?int $userId): array
     {
-        $isAdmin = $user->isAdmin;
+        $user = $userId !== null
+            ? $this->userRepository->findById($userId)
+            : null;
+        $isAdmin = $user?->isAdmin ?? false;
 
         return [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
+            'id' => $user?->id,
+            'name' => $user?->name,
+            'email' => $user?->email,
             'is_admin' => $isAdmin,
             'permissions' => [
                 'delete_quotations' => $isAdmin,

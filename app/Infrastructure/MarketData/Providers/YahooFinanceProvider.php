@@ -46,7 +46,7 @@ class YahooFinanceProvider implements MarketDataProvider
         $querySymbol = $this->buildQuerySymbol($normalizedSymbol, $assetType);
 
         $response = Http::baseUrl($this->config['base_uri'] ?? self::DEFAULT_BASE_URI)
-            ->timeout(10)
+            ->timeout($this->timeoutSeconds())
             ->get('/v7/finance/quote', [
                 'symbols' => $querySymbol,
             ]);
@@ -192,5 +192,13 @@ class YahooFinanceProvider implements MarketDataProvider
         }
 
         return CarbonImmutable::now('UTC');
+    }
+
+    /**
+     * Retorna timeout HTTP ajustavel por configuracao com fallback seguro.
+     */
+    private function timeoutSeconds(): float
+    {
+        return max(0.5, (float) ($this->config['timeout_seconds'] ?? 3.0));
     }
 }

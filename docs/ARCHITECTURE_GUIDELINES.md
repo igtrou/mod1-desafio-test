@@ -84,7 +84,8 @@ Fluxo alvo:
 
 1. `Http/Console -> Application/Ports/In -> Actions -> Services -> Domain`.
 2. `Services -> Application/Ports/Out -> Infrastructure`.
-3. `Domain` nao depende de `Application`, `Http`, `Actions`, `Services`, `Infrastructure`, `Models`, `Data`.
+3. `Http/Console` nao dependem diretamente de `Domain`.
+4. `Domain` nao depende de `Application`, `Http`, `Actions`, `Services`, `Infrastructure`, `Models`, `Data`.
 
 ### Regra especifica para `Services`
 

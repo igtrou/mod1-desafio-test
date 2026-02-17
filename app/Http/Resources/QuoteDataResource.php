@@ -7,8 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Resource para serializacao da cotacao em tempo real retornada por providers.
- *
- * @mixin \App\Domain\MarketData\Quote
  */
 class QuoteDataResource extends JsonResource
 {

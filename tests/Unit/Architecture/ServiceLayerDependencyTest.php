@@ -43,6 +43,22 @@ class ServiceLayerDependencyTest extends TestCase
                     $fileInfo->getPathname()
                 )
             );
+            $this->assertStringNotContainsString(
+                'method_exists(',
+                $contents,
+                sprintf(
+                    'Service file [%s] must not use duck typing via method_exists.',
+                    $fileInfo->getPathname()
+                )
+            );
+            $this->assertDoesNotMatchRegularExpression(
+                '/\b\?object\b|\bobject\s+\$/',
+                $contents,
+                sprintf(
+                    'Service file [%s] must not expose generic object types in method signatures.',
+                    $fileInfo->getPathname()
+                )
+            );
 
             preg_match_all('/^use\s+(App\\\\[A-Za-z0-9_\\\\]+);/m', $contents, $matches);
             $dependencies = $matches[1] ?? [];

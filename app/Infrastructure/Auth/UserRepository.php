@@ -92,6 +92,7 @@ class UserRepository implements UserRepositoryPort
             email: (string) $user->email,
             passwordHash: (string) $user->password,
             isAdmin: (bool) $user->is_admin,
+            emailVerified: (bool) $user->hasVerifiedEmail(),
         );
     }
 }

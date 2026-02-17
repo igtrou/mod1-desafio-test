@@ -147,7 +147,7 @@ No pacote v1 de cotacoes (`/v1/public/quotation/{symbol}` e `/v1/private/*`) ja 
 1. `timeout` por endpoint/backend para evitar requests longas.
 2. `qos/ratelimit/router` por rota e por cliente (`client_max_rate` + `strategy: ip`).
 3. `qos/circuit-breaker` para leitura critica (`/quotation` e `/quotations`).
-4. `cache_ttl: 15s` + `qos/http-cache` em `GET /v1/public/quotation/{symbol}` e `GET /v1/private/quotation/{symbol}`.
+4. `cache_ttl: 60s` + `qos/http-cache` em `GET /v1/public/quotation/{symbol}` e `GET /v1/private/quotation/{symbol}`.
 5. `backend/http.return_error_code: true` nas rotas v1 para preservar status de erro upstream (ex.: `429`) sem mascarar como `500`.
 6. `telemetry/opentelemetry` para metricas/traces (`/metrics` em `:9091`, export OTLP para Jaeger).
 
@@ -230,7 +230,7 @@ curl --request GET --url 'http://localhost:9090/api/v1/query?query=sum(rate(http
 
 ```bash
 curl --request GET --url 'http://localhost:9090/api/v1/rules' \
-  | grep -E 'KrakenDHigh5xxRate|KrakenDHighP95Latency|KrakenDUpstreamErrors'
+  | grep -E 'KrakenDHigh5xxRate|KrakenDHighP95Latency|KrakenDHigh429Rate|KrakenDUpstreamErrors'
 ```
 
 11. Teste rapido de incidente controlado (deve gerar alertas de erro de upstream):

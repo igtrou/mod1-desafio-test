@@ -114,13 +114,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_duration_bucket{http_route=~\"/v1/.*\"}[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_duration_bucket{http_route=\"/v1/public/quotation/:symbol\",http_response_status_code=~\"2..\"}[5m])))",
           "legendFormat": "p95",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "p95 Gateway Latency (v1)",
+      "title": "p95 Gateway Latency (2xx Public Quote)",
       "type": "stat"
     },
     {
@@ -316,13 +316,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(krakend_backend_duration_bucket{krakend_endpoint_route=~\"/v1/.*\"}[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(krakend_backend_duration_bucket{krakend_endpoint_route=\"/v1/public/quotation/:symbol\",error=\"false\"}[5m])))",
           "legendFormat": "backend p95",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Backend p95 Latency (v1)",
+      "title": "Backend p95 Latency (2xx Public Quote)",
       "type": "timeseries"
     },
     {

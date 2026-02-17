@@ -98,13 +98,11 @@ deptrac:
       - Http
       - ApplicationPortsIn
       - Data
-      - Domain
       - Framework
     Console:
       - Console
       - ApplicationPortsIn
       - Data
-      - Domain
       - Framework
     Models:
       - Models

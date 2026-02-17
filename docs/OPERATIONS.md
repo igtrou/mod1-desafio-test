@@ -41,20 +41,32 @@ Use em conjunto com:
 | `GRAFANA_PORT` | `4000` | Porta da UI do Grafana no perfil `krakend-observability`. |
 | `GRAFANA_ADMIN_USER` | `admin` | Usuario admin inicial do Grafana. |
 | `GRAFANA_ADMIN_PASSWORD` | `admin` | Senha admin inicial do Grafana. |
+| `API_ACCESS_LOG_ENABLED` | `true` | Liga/desliga log estruturado de resumo de requisicoes da API. |
+| `API_ACCESS_LOG_CHANNEL` | `api_access` | Canal Laravel usado para gravar resumos de request/response. |
+| `API_ACCESS_LOG_LEVEL` | `info` | Nivel minimo do canal de access log. |
+| `API_ACCESS_LOG_SKIP_PATHS` | vazio | Lista CSV de paths para ignorar no access log (sem `/`). |
+| `API_ACCESS_LOG_DAYS` | `30` | Retencao de arquivos rotacionados do access log em dias. |
+| `AUDIT_FALLBACK_LOG_CHANNEL` | `audit_fallback` | Canal usado quando a persistencia no `activity_log` falha. |
+| `AUDIT_FALLBACK_LOG_LEVEL` | `warning` | Nivel minimo do fallback de auditoria. |
+| `AUDIT_FALLBACK_LOG_DAYS` | `90` | Retencao de arquivos rotacionados do fallback de auditoria. |
 | `MARKET_DATA_PROVIDER` | `awesome_api` | Provider default quando nao informado explicitamente. |
 | `ALPHA_VANTAGE_KEY` | vazio | Chave obrigatoria para consultas via Alpha Vantage. |
 | `ALPHA_VANTAGE_URL` | `https://www.alphavantage.co` | Endpoint base do provider Alpha Vantage. |
 | `ALPHA_VANTAGE_CURRENCY` | `USD` | Moeda default para retornos do Alpha Vantage. |
 | `ALPHA_VANTAGE_TIMEZONE` | `UTC` | Timezone usado para timestamps do Alpha Vantage. |
+| `ALPHA_VANTAGE_TIMEOUT_SECONDS` | `3` | Timeout HTTP (segundos) para chamadas ao Alpha Vantage. |
 | `AWESOME_API_URL` | `https://economia.awesomeapi.com.br/json/last` | Endpoint base do provider AwesomeAPI. |
 | `AWESOME_QUOTE_CURRENCY` | `USD` | Moeda default para retornos do AwesomeAPI. |
 | `AWESOME_API_TIMEZONE` | `America/Sao_Paulo` | Timezone usado para timestamps do AwesomeAPI. |
+| `AWESOME_API_TIMEOUT_SECONDS` | `3` | Timeout HTTP (segundos) para chamadas ao AwesomeAPI. |
 | `YAHOO_FINANCE_URL` | `https://query1.finance.yahoo.com` | Endpoint base do provider Yahoo Finance. |
 | `YAHOO_FINANCE_CURRENCY` | `USD` | Moeda default para retornos do Yahoo Finance. |
+| `YAHOO_FINANCE_TIMEOUT_SECONDS` | `3` | Timeout HTTP (segundos) para chamadas ao Yahoo Finance. |
 | `STOOQ_URL` | `https://stooq.com` | Endpoint base do provider Stooq. |
 | `STOOQ_CURRENCY` | `USD` | Moeda default para retornos do provider Stooq. |
+| `STOOQ_TIMEOUT_SECONDS` | `3` | Timeout HTTP (segundos) para chamadas ao Stooq. |
 | `QUOTATIONS_REQUIRE_AUTH` | `false` | Exige Sanctum nas rotas de cotacao quando `true`. |
-| `QUOTATIONS_RATE_LIMIT` | `60,1` | Limite por minuto nas rotas de cotacao. |
+| `QUOTATIONS_RATE_LIMIT` | `240,1` | Limite por minuto nas rotas de cotacao. |
 | `QUOTATIONS_CACHE_TTL` | `60` | TTL de cache (segundos) para fetch externo. |
 | `QUOTATIONS_AUTO_COLLECT_ENABLED` | `false` | Ativa registro do agendamento de coleta. |
 | `QUOTATIONS_AUTO_COLLECT_INTERVAL_MINUTES` | `15` | Intervalo da coleta automatica (`1..59`). |
@@ -69,6 +81,8 @@ Use em conjunto com:
 | `ACTIVITY_LOGGER_ENABLED` | `true` | Liga/desliga auditoria via `activity_log`. |
 | `ACTIVITY_LOGGER_TABLE_NAME` | `activity_log` | Nome da tabela usada pelo Activity Log. |
 | `ACTIVITY_LOGGER_DB_CONNECTION` | vazio | Conexao opcional dedicada para auditoria. |
+| `CACHE_STORE` | `redis` | Store default de cache/throttle; use Redis para menor latencia em concorrencia. |
+| `REDIS_HOST` | `redis` | Host Redis esperado pelo app no ambiente Docker Compose. |
 
 ## Rotina diaria
 
@@ -159,6 +173,20 @@ Guia de uso e rotas prontas: [`KRAKEND_PLAYGROUND.md`](KRAKEND_PLAYGROUND.md).
 Nota: o perfil `krakend-observability` provisiona as ferramentas, e o projeto ja inclui exportacao de metricas/traces do KrakenD via `telemetry/opentelemetry` no `docker/krakend/krakend.json`.
 Nota de seguranca: em ambientes de producao, ative `GATEWAY_ENFORCE_SOURCE=true`.
 
+## Logs de API e Auditoria
+
+Arquivos locais padrao:
+
+1. `storage/logs/api-access.log`: resumo estruturado por request API (`method`, `path`, `status_code`, `duration_ms`, `request_id` e metadados de gateway).
+2. `storage/logs/audit-fallback.log`: eventos de fallback quando o `activity_log` nao puder persistir auditoria.
+
+Comandos uteis:
+
+```bash
+tail -f storage/logs/api-access.log
+tail -f storage/logs/audit-fallback.log
+```
+
 ## Observabilidade Gateway (Fase 4)
 
 Regras de alerta base (Prometheus):
@@ -167,13 +195,14 @@ Regras de alerta base (Prometheus):
 2. Alertas provisionados:
    1. `KrakenDHigh5xxRate`
    2. `KrakenDHighP95Latency`
-   3. `KrakenDUpstreamErrors`
+   3. `KrakenDHigh429Rate`
+   4. `KrakenDUpstreamErrors`
 
 Validacao de regras carregadas:
 
 ```bash
 curl --request GET --url 'http://localhost:9090/api/v1/rules' \
-  | grep -E 'KrakenDHigh5xxRate|KrakenDHighP95Latency|KrakenDUpstreamErrors'
+  | grep -E 'KrakenDHigh5xxRate|KrakenDHighP95Latency|KrakenDHigh429Rate|KrakenDUpstreamErrors'
 ```
 
 Estado atual dos alertas:

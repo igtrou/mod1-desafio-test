@@ -37,6 +37,7 @@ Responsabilidades:
 2. Validacao/normalizacao (`FormRequest`).
 3. Delegacao para porta de entrada (`App\Application\Ports\In\*UseCase`).
 4. Serializacao de resposta (`Resource`, `JsonResponse`, output CLI).
+5. Sem dependencia direta de `App\Domain\...`.
 
 Exemplos:
 1. `app/Http/Controllers/QuotationController.php`

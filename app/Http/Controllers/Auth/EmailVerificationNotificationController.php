@@ -21,7 +21,10 @@ class EmailVerificationNotificationController extends Controller
         SendEmailVerificationNotificationUseCase $sendEmailVerificationNotification
     ): JsonResponse|RedirectResponse
     {
-        $sent = $sendEmailVerificationNotification($request->user());
+        $user = $request->user();
+        $sent = $sendEmailVerificationNotification(
+            is_numeric($user?->id) ? (int) $user->id : null
+        );
 
         if (! $sent) {
             return redirect()->intended('/dashboard/quotations');

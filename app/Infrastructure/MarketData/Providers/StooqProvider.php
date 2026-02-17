@@ -46,7 +46,7 @@ class StooqProvider implements MarketDataProvider
         $querySymbol = $this->buildQuerySymbol($normalizedSymbol, $resolvedType);
 
         $response = Http::baseUrl($this->config['base_uri'] ?? self::DEFAULT_BASE_URI)
-            ->timeout(10)
+            ->timeout($this->timeoutSeconds())
             ->get('/q/l/', [
                 's' => $querySymbol,
                 'i' => 'd',
@@ -178,5 +178,13 @@ class StooqProvider implements MarketDataProvider
 
         return CarbonImmutable::createFromFormat('Ymd His', "{$date} {$time}", 'UTC')
             ?: CarbonImmutable::now('UTC');
+    }
+
+    /**
+     * Retorna timeout HTTP ajustavel por configuracao com fallback seguro.
+     */
+    private function timeoutSeconds(): float
+    {
+        return max(0.5, (float) ($this->config['timeout_seconds'] ?? 3.0));
     }
 }

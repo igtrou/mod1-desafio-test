@@ -6,6 +6,7 @@ use App\Domain\MarketData\Exceptions\InvalidSymbolException;
 use App\Domain\MarketData\Exceptions\ProviderRateLimitException;
 use App\Domain\MarketData\Exceptions\ProviderUnavailableException;
 use App\Domain\MarketData\Exceptions\QuoteNotFoundException;
+use App\Http\Exceptions\InvalidSymbolInputException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -27,6 +28,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(\App\Http\Middleware\AssignRequestId::class);
+
+        if ((bool) env('API_ACCESS_LOG_ENABLED', true)) {
+            $middleware->append(\App\Http\Middleware\LogApiRequestSummary::class);
+        }
 
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
@@ -91,6 +96,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 return $buildApiErrorResponse($request, $message, $errorCode, $status, $errorDetails);
             });
         };
+
+        $renderApiException(
+            InvalidSymbolInputException::class,
+            'Invalid symbol format.',
+            'invalid_symbol',
+            422
+        );
 
         $renderApiException(
             InvalidSymbolException::class,

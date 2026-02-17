@@ -21,10 +21,10 @@ class VerifyEmailAddressAction implements VerifyEmailAddressUseCase
     /**
      * Marca o e-mail como verificado quando elegivel.
      *
-     * @param  object|null  $user Usuario autenticado corrente.
+     * @param  int|null  $userId Identificador do usuario autenticado.
      */
-    public function __invoke(?object $user): bool
+    public function __invoke(?int $userId): bool
     {
-        return $this->emailVerificationService->verify($user);
+        return $this->emailVerificationService->verify($userId);
     }
 }

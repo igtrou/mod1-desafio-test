@@ -2,8 +2,8 @@
 
 namespace App\Infrastructure\Audit;
 
-use App\Domain\Audit\AuditEntityReference;
 use App\Application\Ports\Out\AuditLoggerPort;
+use App\Domain\Audit\AuditEntityReference;
 use App\Models\Quotation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -18,13 +18,13 @@ class AuditLogger implements AuditLoggerPort
     /**
      * Registra um evento de auditoria com fallback seguro em caso de falha.
      *
-     * @param  string  $description Descricao do evento auditado.
-     * @param  AuditEntityReference|null  $subject Entidade alvo da operacao.
-     * @param  AuditEntityReference|null  $causer Entidade responsavel pela acao.
+     * @param  string  $description  Descricao do evento auditado.
+     * @param  AuditEntityReference|null  $subject  Entidade alvo da operacao.
+     * @param  AuditEntityReference|null  $causer  Entidade responsavel pela acao.
      * @param  array<string, mixed>  $context
      * @param  array<string, mixed>  $properties
-     * @param  string  $event Nome tecnico do evento para indexacao.
-     * @param  string  $logName Nome do canal de auditoria.
+     * @param  string  $event  Nome tecnico do evento para indexacao.
+     * @param  string  $logName  Nome do canal de auditoria.
      */
     public function log(
         string $description,
@@ -59,14 +59,25 @@ class AuditLogger implements AuditLoggerPort
         } catch (Throwable $exception) {
             report($exception);
 
-            Log::warning('Audit log write skipped due to persistence error.', [
-                'event' => $event,
+            $fallbackContext = [
+                'audit_event' => $event,
                 'log_name' => $logName,
                 'description' => $description,
                 'request_id' => $context['request_id'] ?? null,
                 'exception_class' => $exception::class,
                 'exception_message' => $exception->getMessage(),
-            ]);
+            ];
+
+            $fallbackChannel = (string) config('observability.audit.fallback_channel', 'audit_fallback');
+
+            try {
+                Log::channel($fallbackChannel)->warning(
+                    'Audit log write skipped due to persistence error.',
+                    $fallbackContext
+                );
+            } catch (Throwable) {
+                Log::warning('Audit log write skipped due to persistence error.', $fallbackContext);
+            }
         }
     }
 

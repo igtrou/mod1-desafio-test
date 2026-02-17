@@ -2,8 +2,9 @@
 
 return [
     'require_auth' => (bool) env('QUOTATIONS_REQUIRE_AUTH', false),
+    'statuses' => ['valid', 'invalid'],
     // throttle signature: "maxAttempts,decayMinutes"
-    'rate_limit' => env('QUOTATIONS_RATE_LIMIT', '60,1'),
+    'rate_limit' => env('QUOTATIONS_RATE_LIMIT', '240,1'),
     // cache ttl in seconds for external quote fetch
     'cache_ttl' => (int) env('QUOTATIONS_CACHE_TTL', 60),
     'auto_collect' => [

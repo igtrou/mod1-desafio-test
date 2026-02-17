@@ -21,10 +21,10 @@ class SendEmailVerificationNotificationAction implements SendEmailVerificationNo
     /**
      * Solicita envio da notificacao de verificacao e indica se houve envio.
      *
-     * @param  object|null  $user Usuario autenticado corrente.
+     * @param  int|null  $userId Identificador do usuario autenticado.
      */
-    public function __invoke(?object $user): bool
+    public function __invoke(?int $userId): bool
     {
-        return $this->emailVerificationService->sendNotification($user);
+        return $this->emailVerificationService->sendNotification($userId);
     }
 }

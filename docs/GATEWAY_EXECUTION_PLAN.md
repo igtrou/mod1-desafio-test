@@ -29,14 +29,14 @@ Ja implementado:
    2. `quotation.admin`: admin Sanctum **ou** role `moderator` confiada no gateway.
 6. Timeout explicito por endpoint v1 critico (`/v1/public/quotation`, `/v1/private/quotation`, `/v1/private/quotations`).
 7. Rate limit por rota e por cliente (`client_max_rate` + `strategy=ip`) nas rotas v1 privadas/publicas.
-8. Cache curto (`cache_ttl=15s`) para `GET /v1/public/quotation/{symbol}` e `GET /v1/private/quotation/{symbol}`.
+8. Cache curto (`cache_ttl=60s`) para `GET /v1/public/quotation/{symbol}` e `GET /v1/private/quotation/{symbol}`.
 9. Telemetria no gateway via `telemetry/opentelemetry`:
    1. exporter Prometheus em `:9091/metrics`;
    2. export OTLP para Jaeger.
 10. Logging estruturado no KrakenD via `telemetry/logging` com `X-Request-Id` no access log.
 11. Stack observabilidade com Prometheus no profile `krakend-observability`.
 12. Provisionamento Grafana com datasource Prometheus e dashboard inicial `KrakenD Overview`.
-13. Regras base de alerta no Prometheus (`KrakenDHigh5xxRate`, `KrakenDHighP95Latency`, `KrakenDUpstreamErrors`).
+13. Regras base de alerta no Prometheus (`KrakenDHigh5xxRate`, `KrakenDHighP95Latency`, `KrakenDHigh429Rate`, `KrakenDUpstreamErrors`).
 
 Arquivos-chave dessa base:
 
@@ -169,7 +169,8 @@ Status de execucao (13/02/2026):
 4. Regras de alerta acionaveis provisionadas no Prometheus:
    1. `KrakenDHigh5xxRate`;
    2. `KrakenDHighP95Latency`;
-   3. `KrakenDUpstreamErrors`.
+   3. `KrakenDHigh429Rate`;
+   4. `KrakenDUpstreamErrors`.
 5. Validacao operacional de incidente end-to-end documentada no runbook (`docs/OPERATIONS.md`).
 6. Validacao dev executada (13/02/2026):
    1. incidente controlado com upstream Laravel temporariamente indisponivel;

@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Domain\MarketData\AssetType;
-use App\Domain\Quotations\QuotationStatus;
 use App\Http\Requests\Concerns\NormalizesRequestInput;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -29,12 +27,14 @@ class QuotationIndexRequest extends FormRequest
     public function rules(): array
     {
         $configuredProviders = array_keys(config('market-data.providers', []));
+        $assetTypes = (array) config('market-data.asset_types', ['stock', 'crypto', 'currency']);
+        $quotationStatuses = (array) config('quotations.statuses', ['valid', 'invalid']);
 
         return [
             'symbol' => $this->symbolRules('nullable'),
-            'type' => ['nullable', Rule::in(AssetType::values())],
+            'type' => ['nullable', Rule::in($assetTypes)],
             'source' => ['nullable', Rule::in($configuredProviders)],
-            'status' => ['nullable', Rule::in(QuotationStatus::values())],
+            'status' => ['nullable', Rule::in($quotationStatuses)],
             'include_invalid' => ['nullable', 'boolean'],
             'date_from' => ['nullable', 'date'],
             'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],

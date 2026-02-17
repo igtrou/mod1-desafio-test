@@ -16,6 +16,7 @@ class UserAccount
         public readonly string $email,
         public readonly string $passwordHash,
         public readonly bool $isAdmin,
+        public readonly bool $emailVerified,
     ) {}
 
     /**

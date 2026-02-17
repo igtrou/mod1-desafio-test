@@ -76,6 +76,11 @@ class PortsLayerDependencyTest extends TestCase
                 $contents,
                 sprintf('Port file [%s] must declare an interface.', $fileInfo->getPathname())
             );
+            $this->assertDoesNotMatchRegularExpression(
+                '/\b\?object\b|\bobject\s+\$/',
+                $contents,
+                sprintf('Port file [%s] must not expose generic object parameters.', $fileInfo->getPathname())
+            );
 
             foreach ($forbiddenDependencies as $forbiddenDependency) {
                 $this->assertStringNotContainsString(

@@ -5,7 +5,6 @@ namespace App\Actions\Auth;
 use App\Application\Ports\In\Auth\GetAuthenticatedUserProfileUseCase;
 
 use App\Data\AuthenticatedUserData;
-use App\Services\Auth\AuthenticatedUserProfileInput;
 use App\Services\Auth\AuthenticatedUserProfileService;
 
 /**
@@ -23,13 +22,11 @@ class GetAuthenticatedUserProfileAction implements GetAuthenticatedUserProfileUs
     /**
      * Gera o perfil serializavel do usuario autenticado atual.
      *
-     * @param  object|null  $user Usuario resolvido pelo guard da requisicao.
+     * @param  int|null  $userId Identificador do usuario autenticado.
      */
-    public function __invoke(?object $user): AuthenticatedUserData
+    public function __invoke(?int $userId): AuthenticatedUserData
     {
-        $profile = $this->profileService->build(
-            AuthenticatedUserProfileInput::fromNullableUser($user)
-        );
+        $profile = $this->profileService->build($userId);
 
         return new AuthenticatedUserData(
             id: $profile['id'],

@@ -2,15 +2,14 @@
 
 namespace App\Http\Requests\Concerns;
 
-use App\Domain\MarketData\SymbolNormalizer;
-use App\Domain\MarketData\Exceptions\InvalidSymbolException;
+use App\Http\Exceptions\InvalidSymbolInputException;
 
 /**
  * Reuso de normalizacao de payload para requests de cotacoes e dashboard.
  */
 trait NormalizesRequestInput
 {
-    private ?SymbolNormalizer $symbolNormalizer = null;
+    private const ALLOWED_SYMBOL_PATTERN = '/^[A-Z0-9.\-\/_]+$/';
 
     /**
      * Retorna regras comuns para validacao de simbolos de ativos.
@@ -88,22 +87,24 @@ trait NormalizesRequestInput
     }
 
     /**
-     * Normaliza valor bruto de simbolo usando o normalizador de dominio.
+     * Normaliza valor bruto de simbolo sem depender da camada de dominio.
      *
-     * @throws InvalidSymbolException
+     * @throws InvalidSymbolInputException
      */
     protected function normalizeSymbolValue(mixed $value): string
     {
         $rawSymbol = (string) $value;
+        $candidate = strtoupper(trim($rawSymbol));
 
-        return $this->symbolNormalizer()->normalize($rawSymbol);
-    }
+        if ($candidate === '' || preg_match(self::ALLOWED_SYMBOL_PATTERN, $candidate) !== 1) {
+            throw new InvalidSymbolInputException($rawSymbol);
+        }
 
-    /**
-     * Reusa uma unica instancia do normalizador durante o ciclo da request.
-     */
-    private function symbolNormalizer(): SymbolNormalizer
-    {
-        return $this->symbolNormalizer ??= new SymbolNormalizer();
+        if (preg_match('/^[A-Z]{3}[-\/_]?[A-Z]{3}$/', $candidate) === 1) {
+            // Pares de moeda sao persistidos sem separadores (ex.: USD-BRL -> USDBRL).
+            return (string) preg_replace('/[^A-Z]/', '', $candidate);
+        }
+
+        return str_replace('_', '-', $candidate);
     }
 }

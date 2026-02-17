@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Domain\MarketData\AssetType;
 use App\Http\Requests\Concerns\NormalizesRequestInput;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -28,11 +27,12 @@ class QuotationRequest extends FormRequest
     public function rules(): array
     {
         $configuredProviders = array_keys(config('market-data.providers', []));
+        $assetTypes = (array) config('market-data.asset_types', ['stock', 'crypto', 'currency']);
 
         return [
             'symbol' => $this->symbolRules('required'),
             'provider' => ['nullable', Rule::in($configuredProviders)],
-            'type' => ['nullable', Rule::in(AssetType::values())],
+            'type' => ['nullable', Rule::in($assetTypes)],
         ];
     }
 
