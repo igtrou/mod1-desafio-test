@@ -2,7 +2,10 @@
 
 namespace App\Services\Quotations;
 
-use Illuminate\Support\Facades\Cache;
+use App\Application\Ports\Out\RuntimeStateStorePort;
+use DateInterval;
+use DateTimeImmutable;
+use DateTimeZone;
 
 /**
  * Mantem estado volátil de execucao corrente do auto-collect.
@@ -12,6 +15,10 @@ class AutoCollectRunStateService
     private const CACHE_KEY = 'quotations:auto_collect:current_run';
     private const TTL_MINUTES = 120;
 
+    public function __construct(
+        private readonly RuntimeStateStorePort $runtimeStateStore,
+    ) {}
+
     /**
      * Registra dados da execucao em andamento.
      *
@@ -19,7 +26,10 @@ class AutoCollectRunStateService
      */
     public function markRunning(array $context): void
     {
-        Cache::put(self::CACHE_KEY, $context, now()->addMinutes(self::TTL_MINUTES));
+        $expiresAt = (new DateTimeImmutable('now', new DateTimeZone('UTC')))
+            ->add(new DateInterval(sprintf('PT%dM', self::TTL_MINUTES)));
+
+        $this->runtimeStateStore->put(self::CACHE_KEY, $context, $expiresAt);
     }
 
     /**
@@ -27,7 +37,7 @@ class AutoCollectRunStateService
      */
     public function clear(): void
     {
-        Cache::forget(self::CACHE_KEY);
+        $this->runtimeStateStore->forget(self::CACHE_KEY);
     }
 
     /**
@@ -37,7 +47,7 @@ class AutoCollectRunStateService
      */
     public function current(): ?array
     {
-        $payload = Cache::get(self::CACHE_KEY);
+        $payload = $this->runtimeStateStore->get(self::CACHE_KEY);
 
         return is_array($payload) ? $payload : null;
     }

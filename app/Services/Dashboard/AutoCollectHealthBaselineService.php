@@ -2,8 +2,8 @@
 
 namespace App\Services\Dashboard;
 
+use App\Application\Ports\Out\RuntimeStateStorePort;
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\Cache;
 use Throwable;
 
 /**
@@ -13,13 +13,17 @@ class AutoCollectHealthBaselineService
 {
     private const CACHE_KEY = 'dashboard:auto_collect:health_baseline_started_at';
 
+    public function __construct(
+        private readonly RuntimeStateStorePort $runtimeStateStore,
+    ) {}
+
     /**
      * Salva o marco em UTC e retorna o valor persistido.
      */
     public function resetNow(): string
     {
         $startedAt = CarbonImmutable::now('UTC')->toIso8601String();
-        Cache::forever(self::CACHE_KEY, $startedAt);
+        $this->runtimeStateStore->forever(self::CACHE_KEY, $startedAt);
 
         return $startedAt;
     }
@@ -29,7 +33,7 @@ class AutoCollectHealthBaselineService
      */
     public function current(): ?CarbonImmutable
     {
-        $rawValue = Cache::get(self::CACHE_KEY);
+        $rawValue = $this->runtimeStateStore->get(self::CACHE_KEY);
 
         if (! is_string($rawValue) || $rawValue === '') {
             return null;
@@ -47,6 +51,6 @@ class AutoCollectHealthBaselineService
      */
     public function clear(): void
     {
-        Cache::forget(self::CACHE_KEY);
+        $this->runtimeStateStore->forget(self::CACHE_KEY);
     }
 }

@@ -21,6 +21,7 @@ use App\Application\Ports\Out\QuotationReconciliationRepositoryPort;
 use App\Application\Ports\Out\QuotationsConfigPort;
 use App\Application\Ports\Out\QuoteCachePort;
 use App\Application\Ports\Out\RememberTokenGeneratorPort;
+use App\Application\Ports\Out\RuntimeStateStorePort;
 use App\Application\Ports\Out\UserRepositoryPort;
 use App\Application\Ports\Out\WebSessionAuthenticatorPort;
 use App\Application\Ports\Out\WebSessionStatePort;
@@ -36,6 +37,7 @@ use App\Infrastructure\Auth\RememberTokenGenerator;
 use App\Infrastructure\Auth\UserRepository;
 use App\Infrastructure\Auth\WebSessionAuthenticator;
 use App\Infrastructure\Auth\WebSessionState;
+use App\Infrastructure\Cache\RuntimeStateStore;
 use App\Infrastructure\Config\ApplicationEnvironment;
 use App\Infrastructure\Config\ConfigCacheManager;
 use App\Infrastructure\Config\EnvFileEditor;
@@ -126,6 +128,7 @@ class AppServiceProvider extends ServiceProvider
             QuotationsConfigPort::class => QuotationsConfig::class,
             QuoteCachePort::class => QuoteCache::class,
             RememberTokenGeneratorPort::class => RememberTokenGenerator::class,
+            RuntimeStateStorePort::class => RuntimeStateStore::class,
             UserRepositoryPort::class => UserRepository::class,
             WebSessionAuthenticatorPort::class => WebSessionAuthenticator::class,
             WebSessionStatePort::class => WebSessionState::class,

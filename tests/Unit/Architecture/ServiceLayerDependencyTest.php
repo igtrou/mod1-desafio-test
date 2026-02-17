@@ -27,6 +27,22 @@ class ServiceLayerDependencyTest extends TestCase
             $contents = file_get_contents($fileInfo->getPathname());
 
             $this->assertIsString($contents);
+            $this->assertStringNotContainsString(
+                'Illuminate\\',
+                $contents,
+                sprintf(
+                    'Service file [%s] must not depend on Illuminate framework classes.',
+                    $fileInfo->getPathname()
+                )
+            );
+            $this->assertStringNotContainsString(
+                'Laravel\\',
+                $contents,
+                sprintf(
+                    'Service file [%s] must not depend on Laravel framework classes.',
+                    $fileInfo->getPathname()
+                )
+            );
 
             preg_match_all('/^use\s+(App\\\\[A-Za-z0-9_\\\\]+);/m', $contents, $matches);
             $dependencies = $matches[1] ?? [];
